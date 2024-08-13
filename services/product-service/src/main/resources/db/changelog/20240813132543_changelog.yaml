@@ -1,0 +1,31 @@
+databaseChangeLog:
+- changeSet:
+    id: 1723555550440-1
+    author: nguyenkhang (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: productPK
+            name: id
+            type: BIGINT
+        - column:
+            name: available_quantity
+            type: INTEGER
+        - column:
+            name: category
+            type: VARCHAR(255)
+        - column:
+            name: description
+            type: VARCHAR(255)
+        - column:
+            name: name
+            type: VARCHAR(255)
+        - column:
+            name: price
+            type: FLOAT(53)
+        tableName: product
+
