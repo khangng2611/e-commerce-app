@@ -23,7 +23,7 @@ public class CustomerService {
         return new CustomerResponse(customerRepository.save(customer));
     }
     
-    public CustomerResponse updateCustomer(CustomerRequest customerRequest) {
+    public void updateCustomer(CustomerRequest customerRequest) {
         Customer existingCustomer = customerRepository.findById(customerRequest.id()).orElseThrow(() ->
             new CustomerNotFoundException(String.format("No customer found with the provided ID: %s", customerRequest.id()))
         );
@@ -39,7 +39,7 @@ public class CustomerService {
         if (customerRequest.address() != null) {
             existingCustomer.setAddress(customerRequest.address());
         }
-        return new CustomerResponse(this.customerRepository.save(existingCustomer));
+        this.customerRepository.save(existingCustomer);
     }
     
     public List<CustomerResponse> getAllCustomers() {

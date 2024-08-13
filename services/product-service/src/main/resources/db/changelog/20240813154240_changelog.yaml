@@ -1,0 +1,70 @@
+databaseChangeLog:
+- changeSet:
+    id: 1723563764529-1
+    author: nguyenkhang (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: categoryPK
+            name: id
+            type: INTEGER
+        - column:
+            name: description
+            type: VARCHAR(255)
+        - column:
+            name: name
+            type: VARCHAR(255)
+        tableName: category
+- changeSet:
+    id: 1723563764529-2
+    author: nguyenkhang (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: productPK
+            name: id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: available_quantity
+            type: INTEGER
+        - column:
+            name: description
+            type: VARCHAR(255)
+        - column:
+            name: name
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: price
+            type: FLOAT(53)
+        - column:
+            name: category_id
+            type: INTEGER
+        tableName: product
+- changeSet:
+    id: 1723563764529-3
+    author: nguyenkhang (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: category_id
+        baseTableName: product
+        constraintName: FK1mtsbur82frn64de7balymq9s
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: category
+        validate: true
+
