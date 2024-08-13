@@ -1,5 +1,6 @@
 package com.khangng.customer_server.handler;
 
+import com.khangng.customer_server.exception.CustomerNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -23,8 +24,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(new ErrorResponse<>(errors));
     }
     
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorResponse<String>> handleRuntimeException(RuntimeException e) {
+    @ExceptionHandler(CustomerNotFoundException.class)
+    public ResponseEntity<ErrorResponse<String>> handleCustomerNotFoundException(CustomerNotFoundException e) {
         return ResponseEntity.badRequest().body(new ErrorResponse<>(e.getMessage()));
     }
 }

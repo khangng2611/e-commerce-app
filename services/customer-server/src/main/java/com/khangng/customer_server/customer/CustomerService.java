@@ -1,5 +1,6 @@
 package com.khangng.customer_server.customer;
 
+import com.khangng.customer_server.exception.CustomerNotFoundException;
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,7 @@ public class CustomerService {
     
     public CustomerResponse updateCustomer(CustomerRequest customerRequest) {
         Customer existingCustomer = customerRepository.findById(customerRequest.id()).orElseThrow(() ->
-            new RuntimeException(String.format("No customer found with the provided ID: %s", customerRequest.id()))
+            new CustomerNotFoundException(String.format("No customer found with the provided ID: %s", customerRequest.id()))
         );
         if (StringUtils.isNotBlank(customerRequest.firstName())) {
             existingCustomer.setFistName(customerRequest.firstName());
@@ -51,7 +52,7 @@ public class CustomerService {
     public CustomerResponse getCustomerById(String customerId) {
         return customerRepository.findById(customerId)
             .map(CustomerResponse::new)
-            .orElseThrow(() -> new RuntimeException(String.format("No customer found with the provided ID: %s", customerId)));
+            .orElseThrow(() -> new CustomerNotFoundException(String.format("No customer found with the provided ID: %s", customerId)));
     }
     
     public void deleteCustomer(String customerId) {

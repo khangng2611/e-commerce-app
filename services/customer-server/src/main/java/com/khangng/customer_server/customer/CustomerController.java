@@ -19,6 +19,7 @@ public class CustomerController {
     
     @PutMapping
     public ResponseEntity<Void> updateCustomer(@RequestBody @Valid CustomerRequest customerRequest) {
+        customerService.updateCustomer(customerRequest);
         return ResponseEntity.accepted().build();
     }
     

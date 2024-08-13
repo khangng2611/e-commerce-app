@@ -9,10 +9,8 @@ import org.springframework.validation.annotation.Validated;
 @Builder
 @Getter
 @Setter
-//@Validated
+@Validated
 public class Address {
-    @Id
-    private String id;
     private String street;
     private String houseNumber;
     private String zipCode;
