@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.khangng</groupId>
-	<artifactId>customer-server</artifactId>
+	<artifactId>customer-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>customer-server</name>
+	<name>customer-service</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
 	<licenses>

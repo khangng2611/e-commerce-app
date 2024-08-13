@@ -1,4 +1,4 @@
-package com.khangng.customer_server.customer;
+package com.khangng.customer_service.customer;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

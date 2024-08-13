@@ -1,6 +1,6 @@
-package com.khangng.customer_server.handler;
+package com.khangng.customer_service.handler;
 
-import com.khangng.customer_server.exception.CustomerNotFoundException;
+import com.khangng.customer_service.exception.CustomerNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;

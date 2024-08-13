@@ -1,6 +1,6 @@
-package com.khangng.customer_server.customer;
+package com.khangng.customer_service.customer;
 
-import com.khangng.customer_server.exception.CustomerNotFoundException;
+import com.khangng.customer_service.exception.CustomerNotFoundException;
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

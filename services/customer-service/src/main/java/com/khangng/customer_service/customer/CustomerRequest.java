@@ -1,4 +1,4 @@
-package com.khangng.customer_server.customer;
+package com.khangng.customer_service.customer;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;

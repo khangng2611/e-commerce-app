@@ -1,4 +1,4 @@
-package com.khangng.customer_server.handler;
+package com.khangng.customer_service.handler;
 
 import java.util.Map;
 

@@ -1,4 +1,4 @@
-package com.khangng.customer_server.exception;
+package com.khangng.customer_service.exception;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
