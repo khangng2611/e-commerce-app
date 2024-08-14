@@ -1,6 +1,7 @@
 package com.khangng.product_service.handler;
 
 import com.khangng.product_service.exception.NotFoundException;
+import com.khangng.product_service.exception.PurchaseException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -12,8 +13,8 @@ import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorResponse<String>> handleNotFoundException(NotFoundException e) {
+    @ExceptionHandler({NotFoundException.class, PurchaseException.class})
+    public ResponseEntity<ErrorResponse<String>> handleException(RuntimeException e) {
         return ResponseEntity.badRequest().body(new ErrorResponse<>(e.getMessage()));
     }
     
