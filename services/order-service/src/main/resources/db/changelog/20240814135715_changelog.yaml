@@ -1,0 +1,82 @@
+databaseChangeLog:
+- changeSet:
+    id: 1723643840605-1
+    author: nguyenkhang (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: order_linePK
+            name: id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: product_id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: quantity
+            type: INTEGER
+        - column:
+            name: order_id
+            type: INTEGER
+        tableName: order_line
+- changeSet:
+    id: 1723643840605-2
+    author: nguyenkhang (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ordersPK
+            name: id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: created_at
+            type: TIMESTAMP(6) WITHOUT TIME ZONE
+        - column:
+            name: customer_id
+            type: VARCHAR(255)
+        - column:
+            name: payment_method
+            type: VARCHAR(255)
+        - column:
+            name: reference
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: total_amount
+            type: FLOAT(53)
+        - column:
+            constraints:
+              nullable: false
+            name: updated_at
+            type: TIMESTAMP(6) WITHOUT TIME ZONE
+        tableName: orders
+- changeSet:
+    id: 1723643840605-3
+    author: nguyenkhang (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: order_id
+        baseTableName: order_line
+        constraintName: FKk9f9t1tmkbq5w27u8rrjbxxg6
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: orders
+        validate: true
+

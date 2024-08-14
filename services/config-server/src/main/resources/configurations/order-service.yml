@@ -7,6 +7,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
+    database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
   liquibase:
@@ -16,3 +17,8 @@ spring:
 server:
   port: 8092
 
+application:
+  config:
+    customer-url: http://localhost:8090/customers
+    product-url: http://localhost:8091/products
+    payment-url: http://localhost:8093/payments
