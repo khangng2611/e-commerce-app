@@ -19,9 +19,8 @@ public class ProductController {
     }
     
     @PostMapping("/purchase")
-    public ResponseEntity<Void> purchaseProduct(@RequestBody @Valid PurchaseRequest purchaseRequest) {
-        productService.purchaseProduct(purchaseRequest);
-        return ResponseEntity.accepted().build();
+    public ResponseEntity<List<PurchaseResponse>> purchaseProduct(@RequestBody @Valid List<PurchaseRequest> purchaseRequest) {
+        return ResponseEntity.ok().body(productService.purchaseProduct(purchaseRequest));
     }
     
     @GetMapping
@@ -34,7 +33,4 @@ public class ProductController {
     }
     
     
-    
-    
-
 }

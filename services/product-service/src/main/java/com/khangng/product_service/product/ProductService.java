@@ -4,11 +4,13 @@ import com.khangng.product_service.category.CategoryRepository;
 import com.khangng.product_service.entity.Category;
 import com.khangng.product_service.entity.Product;
 import com.khangng.product_service.exception.NotFoundException;
+import com.khangng.product_service.exception.PurchaseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -41,9 +43,30 @@ public class ProductService {
         return productRepository.findAll()
                 .stream()
                 .map(ProductResponse::new)
-                .collect(Collectors.toList());
+                .toList();
     }
     
-    public void purchaseProduct(PurchaseRequest purchaseRequest) {
+    public List<PurchaseResponse> purchaseProduct(List<PurchaseRequest> purchaseRequest) {
+        List<Integer> productIdList = purchaseRequest.stream().map(PurchaseRequest::productId).toList();
+        List<Product> productList = productRepository.findAllById(productIdList);
+        if (productList.size() != productIdList.size()) {
+            throw new PurchaseException("There is one or more product not found");
+        }
+        
+        List<PurchaseResponse> purchasedProducts = new ArrayList<>();
+        List<PurchaseRequest> sortedPurchaseRequest = purchaseRequest.stream()
+                .sorted(Comparator.comparing(PurchaseRequest::productId))
+                .toList();
+        for (int i = 0; i< sortedPurchaseRequest.size(); i++) {
+            PurchaseRequest tempPurchaseRequest = sortedPurchaseRequest.get(i);
+            Product tempProduct = productList.get(i);
+            if (tempPurchaseRequest.quantity() > tempProduct.getAvailableQuantity()) {
+                throw new PurchaseException("Not enough quantity for product with id " + tempProduct.getId());
+            }
+            tempProduct.setAvailableQuantity(tempProduct.getAvailableQuantity() - tempPurchaseRequest.quantity());
+            productRepository.save(tempProduct);
+            purchasedProducts.add(new PurchaseResponse(tempProduct, tempPurchaseRequest.quantity()));
+        }
+        return purchasedProducts;
     }
 }

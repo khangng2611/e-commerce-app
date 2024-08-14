@@ -1,7 +1,11 @@
 package com.khangng.product_service.product;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+
 public record PurchaseRequest(
-    String customerId,
-    String productId,
+    @NotNull(message = "Product id is mandatory")
+    int productId,
+    @Positive(message = "Quantity should be positive")
     int quantity
 ) {}
