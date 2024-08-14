@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/ecom_product
+    url: jdbc:postgresql://localhost:5432/ecom_order
     username: postgres
     password: nguyenkhang
 
@@ -14,5 +14,5 @@ spring:
     enabled: true
 
 server:
-  port: 8091
+  port: 8092
 
