@@ -1,0 +1,10 @@
+databaseChangeLog:
+- changeSet:
+    id: 1723730654660-1
+    author: nguyenkhang (generated)
+    changes:
+    - dropNotNullConstraint:
+        columnDataType: timestamp(6)
+        columnName: updated_at
+        tableName: orders
+

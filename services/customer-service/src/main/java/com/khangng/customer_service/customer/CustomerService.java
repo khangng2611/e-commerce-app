@@ -15,7 +15,7 @@ public class CustomerService {
     
     public CustomerResponse createCustomer(CustomerRequest customerRequest) {
         Customer customer = Customer.builder()
-                .fistName(customerRequest.firstName())
+                .firstName(customerRequest.firstName())
                 .lastName(customerRequest.lastName())
                 .email(customerRequest.email())
                 .address(customerRequest.address())
@@ -28,7 +28,7 @@ public class CustomerService {
             new CustomerNotFoundException(String.format("No customer found with the provided ID: %s", customerRequest.id()))
         );
         if (StringUtils.isNotBlank(customerRequest.firstName())) {
-            existingCustomer.setFistName(customerRequest.firstName());
+            existingCustomer.setFirstName(customerRequest.firstName());
         }
         if (StringUtils.isNotBlank(customerRequest.lastName())) {
             existingCustomer.setLastName(customerRequest.lastName());
