@@ -1,0 +1,14 @@
+databaseChangeLog:
+- changeSet:
+    id: 1723791096064-1
+    author: nguyenkhang (generated)
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+            name: order_id
+            type: integer
+        tableName: payment
+
