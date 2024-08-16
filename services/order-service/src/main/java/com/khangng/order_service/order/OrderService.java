@@ -1,6 +1,7 @@
 package com.khangng.order_service.order;
 
 import com.khangng.order_service.customer.CustomerClient;
+import com.khangng.order_service.customer.CustomerRequest;
 import com.khangng.order_service.customer.CustomerResponse;
 import com.khangng.order_service.entity.Order;
 import com.khangng.order_service.entity.OrderLine;
@@ -10,6 +11,8 @@ import com.khangng.order_service.kafka.OrderProducer;
 import com.khangng.order_service.order_line.OrderLineRepository;
 import com.khangng.order_service.order_line.OrderLineResponse;
 import com.khangng.order_service.order_line.OrderLineService;
+import com.khangng.order_service.payment.PaymentClient;
+import com.khangng.order_service.payment.PaymentRequest;
 import com.khangng.order_service.product.ProductClient;
 import com.khangng.order_service.product.PurchaseResponse;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +28,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderLineService orderLineService;
     private final OrderProducer orderProducer;
+    private final PaymentClient paymentClient;
     public OrderResponse createOrder(OrderRequest orderRequest) {
         // Get customer
         CustomerResponse customer = customerClient.findCustomerById(orderRequest.customerId())
@@ -53,6 +57,20 @@ public class OrderService {
         }
         
         // todo start payment
+        paymentClient.createPayment(
+            new PaymentRequest(
+                savedNewOrder.getId(),
+                savedNewOrder.getTotalAmount(),
+                savedNewOrder.getPaymentMethod(),
+                savedNewOrder.getReference(),
+                new CustomerRequest(
+                    customer.id(),
+                    customer.firstName(),
+                    customer.lastName(),
+                    customer.email()
+                )
+            )
+        );
         
         // send order notification
         orderProducer.sendOrderConfirmation(
