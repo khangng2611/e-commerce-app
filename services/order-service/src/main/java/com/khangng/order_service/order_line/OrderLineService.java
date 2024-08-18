@@ -12,13 +12,18 @@ import java.util.List;
 @Service
 public class OrderLineService {
     private final OrderLineRepository orderLineRepository;
-    public void createOrderLine(int orderId, int productId, int quantity) {
+    public OrderLineResponse createOrderLine(int orderId, int productId, int quantity) {
         OrderLine newOrderLine = OrderLine.builder()
                 .order(Order.builder().id(orderId).build())
                 .productId(productId)
                 .quantity(quantity)
                 .build();
-        orderLineRepository.save(newOrderLine);
+        var savedOrderLine = orderLineRepository.save(newOrderLine);
+        return new OrderLineResponse(
+            savedOrderLine.getId(),
+            savedOrderLine.getProductId(),
+            savedOrderLine.getQuantity()
+        );
     }
     
     public List<OrderLineResponse> findOrderLineByOrderId(int orderId) {

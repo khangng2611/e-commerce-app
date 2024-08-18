@@ -7,6 +7,7 @@ import com.khangng.order_service.product.PurchaseResponse;
 import java.util.List;
 
 public record OrderConfirmation (
+        int orderId,
         String orderReference,
         double totalAmount,
         PaymentMethod paymentMethod,

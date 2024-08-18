@@ -15,9 +15,12 @@ import com.khangng.order_service.payment.PaymentClient;
 import com.khangng.order_service.payment.PaymentRequest;
 import com.khangng.order_service.product.ProductClient;
 import com.khangng.order_service.product.PurchaseResponse;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -29,10 +32,17 @@ public class OrderService {
     private final OrderLineService orderLineService;
     private final OrderProducer orderProducer;
     private final PaymentClient paymentClient;
+    
+    @Transactional
     public OrderResponse createOrder(OrderRequest orderRequest) {
         // Get customer
-        CustomerResponse customer = customerClient.findCustomerById(orderRequest.customerId())
-                .orElseThrow(() -> new OrderException("CustomerId :: Customer not found"));
+        CustomerResponse customer = null;
+        try {
+            customer = customerClient.findCustomerById(orderRequest.customerId())
+                    .orElseThrow(() -> new OrderException("Customer :: Not found with id %s".formatted(orderRequest.customerId())));
+        } catch (FeignException e) {
+            throw new OrderException("Customer :: Not found with id %s".formatted(orderRequest.customerId()));
+        }
         
         // Purchase product
         List<PurchaseResponse> purchaseResponseList = productClient.purchase(orderRequest.products())
@@ -48,16 +58,18 @@ public class OrderService {
         var savedNewOrder = orderRepository.save(newOrder);
         
         // save order line
+        List<OrderLineResponse> orderLineResponseList = new ArrayList<>();
         for (var purchaseRequest : orderRequest.products()) {
-            orderLineService.createOrderLine(
+            OrderLineResponse orderLineResponse = orderLineService.createOrderLine(
                 savedNewOrder.getId(),
                 purchaseRequest.productId(),
                 purchaseRequest.quantity()
             );
+            orderLineResponseList.add(orderLineResponse);
         }
         
-        // todo start payment
-        paymentClient.createPayment(
+        // save payment
+        int paymentId = paymentClient.createPayment(
             new PaymentRequest(
                 savedNewOrder.getId(),
                 savedNewOrder.getTotalAmount(),
@@ -75,6 +87,7 @@ public class OrderService {
         // send order notification
         orderProducer.sendOrderConfirmation(
             new OrderConfirmation(
+                savedNewOrder.getId(),
                 savedNewOrder.getReference(),
                 savedNewOrder.getTotalAmount(),
                 savedNewOrder.getPaymentMethod(),
@@ -85,7 +98,14 @@ public class OrderService {
         
         // if payment success, send payment notification
         
-        return null;
+        return new OrderResponse(
+            savedNewOrder.getId(),
+            savedNewOrder.getReference(),
+            savedNewOrder.getTotalAmount(),
+            savedNewOrder.getPaymentMethod(),
+            savedNewOrder.getCustomerId(),
+            orderLineResponseList
+        );
     }
     
     public List<OrderResponse> findAll() {
