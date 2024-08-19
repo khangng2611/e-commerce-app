@@ -1,6 +1,6 @@
 package com.khangng.payment_service.payment;
 
-public enum Status {
+public enum PaymentStatus {
     PENDING,
     SUCCESS,
     FAILED

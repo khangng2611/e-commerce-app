@@ -13,6 +13,7 @@ import com.khangng.order_service.order_line.OrderLineResponse;
 import com.khangng.order_service.order_line.OrderLineService;
 import com.khangng.order_service.payment.PaymentClient;
 import com.khangng.order_service.payment.PaymentRequest;
+import com.khangng.order_service.payment.PaymentResponse;
 import com.khangng.order_service.product.ProductClient;
 import com.khangng.order_service.product.PurchaseResponse;
 import feign.FeignException;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -50,7 +52,6 @@ public class OrderService {
         
         // save order
         Order newOrder = Order.builder()
-                .reference(orderRequest.reference())
                 .totalAmount(orderRequest.totalAmount())
                 .customerId(orderRequest.customerId())
                 .paymentMethod(orderRequest.paymentMethod())
@@ -69,12 +70,11 @@ public class OrderService {
         }
         
         // save payment
-        int paymentId = paymentClient.createPayment(
+        PaymentResponse paymentResponse = paymentClient.createPayment(
             new PaymentRequest(
                 savedNewOrder.getId(),
                 savedNewOrder.getTotalAmount(),
                 savedNewOrder.getPaymentMethod(),
-                savedNewOrder.getReference(),
                 new CustomerRequest(
                     customer.id(),
                     customer.firstName(),
@@ -88,7 +88,6 @@ public class OrderService {
         orderProducer.sendOrderConfirmation(
             new OrderConfirmation(
                 savedNewOrder.getId(),
-                savedNewOrder.getReference(),
                 savedNewOrder.getTotalAmount(),
                 savedNewOrder.getPaymentMethod(),
                 customer,
@@ -100,24 +99,24 @@ public class OrderService {
         
         return new OrderResponse(
             savedNewOrder.getId(),
-            savedNewOrder.getReference(),
             savedNewOrder.getTotalAmount(),
             savedNewOrder.getPaymentMethod(),
             savedNewOrder.getCustomerId(),
-            orderLineResponseList
+            orderLineResponseList,
+            paymentResponse.paymentUrl()
         );
     }
     
     public List<OrderResponse> findAll() {
         return orderRepository.findAll()
             .stream()
-            .map(order -> new OrderResponse(order, orderLineService.findOrderLineByOrderId(order.getId())))
+            .map(order -> new OrderResponse(order, orderLineService.findOrderLineByOrderId(order.getId()), null))
             .toList();
     }
     
-    public OrderResponse findById(Integer orderId) {
+    public OrderResponse findById(UUID orderId) {
         return orderRepository.findById(orderId)
-            .map(order -> new OrderResponse(order, orderLineService.findOrderLineByOrderId(orderId)))
+            .map(order -> new OrderResponse(order, orderLineService.findOrderLineByOrderId(orderId), null))
             .orElseThrow(() -> new OrderException("Order not found"));
     }
 }

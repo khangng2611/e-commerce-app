@@ -1,7 +1,7 @@
 package com.khangng.payment_service.vnpay;
 
 public record VNPayRequest(
-        String orderReference,
+        String orderId,
         double amount,
         String ipAddress
 ) {

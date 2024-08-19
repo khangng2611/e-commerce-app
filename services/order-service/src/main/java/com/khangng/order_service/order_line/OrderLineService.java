@@ -7,12 +7,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
 public class OrderLineService {
     private final OrderLineRepository orderLineRepository;
-    public OrderLineResponse createOrderLine(int orderId, int productId, int quantity) {
+    public OrderLineResponse createOrderLine(UUID orderId, int productId, int quantity) {
         OrderLine newOrderLine = OrderLine.builder()
                 .order(Order.builder().id(orderId).build())
                 .productId(productId)
@@ -26,7 +27,7 @@ public class OrderLineService {
         );
     }
     
-    public List<OrderLineResponse> findOrderLineByOrderId(int orderId) {
+    public List<OrderLineResponse> findOrderLineByOrderId(UUID orderId) {
         return orderLineRepository.findAllByOrderId(orderId)
                 .stream()
                 .map(orderLine -> new OrderLineResponse(

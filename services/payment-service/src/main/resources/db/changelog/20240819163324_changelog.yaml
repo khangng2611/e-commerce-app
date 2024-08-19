@@ -1,0 +1,39 @@
+databaseChangeLog:
+- changeSet:
+    id: 1724085209829-1
+    author: nguyenkhang (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: paymentPK
+            name: id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: amount
+            type: FLOAT(53)
+        - column:
+            constraints:
+              nullable: false
+            name: created_at
+            type: TIMESTAMP(6) WITHOUT TIME ZONE
+        - column:
+            name: order_id
+            type: UUID
+        - column:
+            name: payment_method
+            type: VARCHAR(255)
+        - column:
+            name: payment_status
+            type: VARCHAR(255)
+        - column:
+            name: updated_at
+            type: TIMESTAMP(6) WITHOUT TIME ZONE
+        tableName: payment
+

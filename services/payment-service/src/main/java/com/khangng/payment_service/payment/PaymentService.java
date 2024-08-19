@@ -1,15 +1,18 @@
 package com.khangng.payment_service.payment;
 
+import com.khangng.payment_service.customer.CustomerResponse;
 import com.khangng.payment_service.entity.Payment;
 import com.khangng.payment_service.kafka.PaymentConfirmation;
 import com.khangng.payment_service.kafka.PaymentProducer;
 import com.khangng.payment_service.vnpay.VNPayRequest;
 import com.khangng.payment_service.vnpay.VNPayService;
+import com.khangng.payment_service.customer.CustomerClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -17,20 +20,21 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final PaymentProducer paymentProducer;
     private final VNPayService vnpayService;
+    private final CustomerClient customerClient;
     public PaymentResponse createPayment(PaymentRequest paymentRequest, String ipAddress) throws UnsupportedEncodingException {
         String paymentUrl = "";
         var newPayment = Payment.builder()
-                .reference(paymentRequest.orderReference())
-                .status(Status.PENDING)
+                .paymentStatus(PaymentStatus.PENDING)
                 .orderId(paymentRequest.orderId())
+                .customerId(paymentRequest.customer().id())
                 .paymentMethod(paymentRequest.paymentMethod())
                 .amount(paymentRequest.amount())
                 .build();
         if (paymentRequest.paymentMethod().equals(PaymentMethod.CASH)) {
-            newPayment.setStatus(Status.SUCCESS);
+            newPayment.setPaymentStatus(PaymentStatus.SUCCESS);
         } else if (paymentRequest.paymentMethod().equals(PaymentMethod.VNPAY)){
             VNPayRequest vnpayRequest = new VNPayRequest(
-                newPayment.getReference(),
+                newPayment.getOrderId().toString(),
                 newPayment.getAmount(),
                 ipAddress
             );
@@ -42,7 +46,6 @@ public class PaymentService {
             paymentProducer.sendPaymentConfirmation(
                 new PaymentConfirmation(
                     savedPayment.getOrderId(),
-                    savedPayment.getReference(),
                     savedPayment.getAmount(),
                     savedPayment.getPaymentMethod(),
                     paymentRequest.customer().firstName(),
@@ -54,10 +57,9 @@ public class PaymentService {
         
         return new PaymentResponse(
             savedPayment.getId(),
-            savedPayment.getReference(),
             savedPayment.getAmount(),
             savedPayment.getOrderId(),
-            savedPayment.getStatus(),
+            savedPayment.getPaymentStatus(),
             savedPayment.getPaymentMethod(),
             paymentUrl
         );
@@ -66,18 +68,18 @@ public class PaymentService {
     public void handleVNPayCallback(Map<String, String> params) {
         System.out.println("VNPay callback received");
         if (params.get("vnp_ResponseCode").equals("00")) {
-            var payment = paymentRepository.findByReference(params.get("vnp_TxnRef"));
-            payment.setStatus(Status.SUCCESS);
+            var payment = paymentRepository.findByOrderId(UUID.fromString(params.get("vnp_TxnRef")));
+            payment.setPaymentStatus(PaymentStatus.SUCCESS);
             paymentRepository.save(payment);
+            CustomerResponse customer = customerClient.findCustomerById(payment.getCustomerId());
             paymentProducer.sendPaymentConfirmation(
                 new PaymentConfirmation(
                     payment.getOrderId(),
-                    payment.getReference(),
                     payment.getAmount(),
                     payment.getPaymentMethod(),
-                    payment.getCustomer().getFirstName(),
-                    payment.getCustomer().getLastName(),
-                    payment.getCustomer().getEmail()
+                    customer.firstName(),
+                    customer.lastName(),
+                    customer.email()
                 )
             );
         }

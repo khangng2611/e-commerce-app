@@ -5,10 +5,10 @@ import com.khangng.order_service.order.PaymentMethod;
 import com.khangng.order_service.product.PurchaseResponse;
 
 import java.util.List;
+import java.util.UUID;
 
 public record OrderConfirmation (
-        int orderId,
-        String orderReference,
+        UUID orderId,
         double totalAmount,
         PaymentMethod paymentMethod,
         CustomerResponse customer,

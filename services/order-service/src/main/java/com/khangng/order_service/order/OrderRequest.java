@@ -7,10 +7,10 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 import java.util.List;
+import java.util.UUID;
 
 public record OrderRequest(
-    int id,
-    String reference,
+    UUID id,
     @Positive(message = "Total amount should be positive")
     double totalAmount,
     @NotNull(message = "Payment method is mandatory")

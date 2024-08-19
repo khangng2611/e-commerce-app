@@ -1,11 +1,12 @@
 package com.khangng.payment_service.payment;
 
+import java.util.UUID;
+
 public record PaymentResponse(
     int id,
-    String reference,
     double amount,
-    int orderId,
-    Status status,
+    UUID orderId,
+    PaymentStatus paymentStatus,
     PaymentMethod paymentMethod,
     String paymentUrl
 ) { }

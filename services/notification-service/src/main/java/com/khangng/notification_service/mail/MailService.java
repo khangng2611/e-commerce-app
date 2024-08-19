@@ -33,8 +33,7 @@ public class MailService {
             
             Map<String, Object> variables = new HashMap<>();
             variables.put("customerName", orderConfirmation.customer().firstName() + " " + orderConfirmation.customer().lastName());
-            variables.put("orderId", orderConfirmation.orderId());
-            variables.put("orderReference", orderConfirmation.orderReference());
+            variables.put("orderId", orderConfirmation.orderId().toString());
             variables.put("products", orderConfirmation.products());
             variables.put("totalAmount", orderConfirmation.totalAmount());
             variables.put("paymentMethod", orderConfirmation.paymentMethod());
@@ -65,8 +64,7 @@ public class MailService {
             Map<String, Object> variables = new HashMap<>();
             variables.put("customerName", paymentConfirmation.customerFirstname() + " " + paymentConfirmation.customerLastname());
             variables.put("amount", paymentConfirmation.amount());
-            variables.put("orderId", paymentConfirmation.orderId());
-            variables.put("orderReference", paymentConfirmation.orderReference());
+            variables.put("orderId", paymentConfirmation.orderId().toString());
             variables.put("paymentMethod", paymentConfirmation.paymentMethod());
             
             // thymeleaf

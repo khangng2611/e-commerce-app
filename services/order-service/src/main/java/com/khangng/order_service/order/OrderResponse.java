@@ -6,23 +6,24 @@ import com.khangng.order_service.entity.OrderLine;
 import com.khangng.order_service.order_line.OrderLineResponse;
 import com.khangng.order_service.product.PurchaseResponse;
 import java.util.List;
+import java.util.UUID;
 
 public record OrderResponse(
-    int id,
-    String reference,
+    UUID id,
     double totalAmount,
     PaymentMethod paymentMethod,
     String customerId,
-    List<OrderLineResponse> orderLineResponseList
+    List<OrderLineResponse> orderLineResponseList,
+    String paymentUrl
 ) {
-    public OrderResponse (Order order, List<OrderLineResponse> orderLineResponseList) {
+    public OrderResponse (Order order, List<OrderLineResponse> orderLineResponseList, String paymentUrl) {
         this(
             order.getId(),
-            order.getReference(),
             order.getTotalAmount(),
             order.getPaymentMethod(),
             order.getCustomerId(),
-            orderLineResponseList
+            orderLineResponseList,
+            paymentUrl
         );
     }
 }

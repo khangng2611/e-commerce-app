@@ -1,8 +1,9 @@
 package com.khangng.notification_service.kafka.payment;
 
+import java.util.UUID;
+
 public record PaymentConfirmation(
-    int orderId,
-    String orderReference,
+    UUID orderId,
     double amount,
     PaymentMethod paymentMethod,
     String customerFirstname,

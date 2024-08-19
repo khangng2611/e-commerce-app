@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @RestController
@@ -24,8 +25,8 @@ public class OrderController {
     
     @GetMapping("/{order-id}")
     public ResponseEntity<OrderResponse> findById(
-            @PathVariable("order-id") Integer orderId
+            @PathVariable("order-id") String orderId
     ) {
-        return ResponseEntity.ok(orderService.findById(orderId));
+        return ResponseEntity.ok(orderService.findById(UUID.fromString(orderId)));
     }
 }

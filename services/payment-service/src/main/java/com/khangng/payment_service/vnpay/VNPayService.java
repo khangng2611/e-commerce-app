@@ -16,8 +16,8 @@ public class VNPayService {
     
     public String createPaymentUrl(VNPayRequest vnPayRequest) throws UnsupportedEncodingException {
         Map<String, String> vnPayParams = vnPayConfig.getVNPayConfig();
-        vnPayParams.put("vnp_TxnRef", vnPayRequest.orderReference());
-        vnPayParams.put("vnp_OrderInfo", "Thanh toan don hang:" + vnPayRequest.orderReference());
+        vnPayParams.put("vnp_TxnRef", vnPayRequest.orderId());
+        vnPayParams.put("vnp_OrderInfo", "Thanh toan don hang:" + vnPayRequest.orderId());
         vnPayParams.put("vnp_IpAddr", vnPayRequest.ipAddress());
         
         long amount = (long) (vnPayRequest.amount()*100);

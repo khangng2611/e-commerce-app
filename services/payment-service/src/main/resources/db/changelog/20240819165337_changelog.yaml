@@ -1,0 +1,12 @@
+databaseChangeLog:
+- changeSet:
+    id: 1724086423109-1
+    author: nguyenkhang (generated)
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            name: customer_id
+            type: varchar(255)
+        tableName: payment
+
