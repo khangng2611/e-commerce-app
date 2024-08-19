@@ -3,3 +3,13 @@ spring:
     name: payment-service
   config:
     import: optional:configserver:http://localhost:8888
+
+
+vnpay:
+  version: 2.1.0
+  command: pay
+  order-type: other
+  tmn-code: Q5M2CRIH
+  hash-secret: 9XOX4E52FCZ0BQ9SBYWPZEMT4DRNJONV
+  url: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+  return-url: http://localhost:8093/api/v1/payments/vnpay/callback
