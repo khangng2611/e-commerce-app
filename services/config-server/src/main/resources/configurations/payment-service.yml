@@ -23,7 +23,7 @@ spring:
         spring.json.type.mapping: paymentConfirmation:com.khangng.payment_service.kafka.PaymentConfirmation
 
 server:
-  port: 8093
+  port: 8084
 
 application:
   config:

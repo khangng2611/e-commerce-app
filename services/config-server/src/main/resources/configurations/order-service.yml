@@ -23,10 +23,10 @@ spring:
         spring.json.type.mapping: orderConfirmation:com.khangng.order_service.kafka.OrderConfirmation
 
 server:
-  port: 8092
+  port: 8083
 
 application:
   config:
-    customer-url: http://localhost:8090/api/v1/customers
-    product-url: http://localhost:8091/api/v1/products
-    payment-url: http://localhost:8093/api/v1/payments
+    customer-url: http://localhost:8080/api/v1/customers
+    product-url: http://localhost:8080/api/v1/products
+    payment-url: http://localhost:8080/api/v1/payments

@@ -32,4 +32,4 @@ spring:
         writetimeout: 5000
 
 server:
-  port: 8094
+  port: 8085

@@ -22,4 +22,4 @@ spring:
           predicates:
             - Path=/api/v1/payments/**
 server:
-  port: 8095
+  port: 8080
