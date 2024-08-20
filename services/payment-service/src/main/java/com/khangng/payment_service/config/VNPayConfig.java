@@ -38,7 +38,7 @@ public class VNPayConfig {
         vnPayParams.put("vnp_Command", this.command);
         vnPayParams.put("vnp_OrderType", this.orderType);
         vnPayParams.put("vnp_TmnCode", this.tmnCode);
-        vnPayParams.put("vnp_CurrCode", "USD");
+        vnPayParams.put("vnp_CurrCode", "VND");
         vnPayParams.put("vnp_Locale", "vn");
         vnPayParams.put("vnp_ReturnUrl", this.returnUrl);
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
