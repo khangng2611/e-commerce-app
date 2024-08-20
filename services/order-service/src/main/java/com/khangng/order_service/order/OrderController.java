@@ -14,8 +14,11 @@ import java.util.UUID;
 public class OrderController {
     private final OrderService orderService;
     @PostMapping
-    public ResponseEntity<OrderResponse> createOrder(@RequestBody @Valid OrderRequest orderRequest) {
-        return ResponseEntity.ok().body(orderService.createOrder(orderRequest));
+    public ResponseEntity<OrderResponse> createOrder (
+        @RequestHeader(value = "Authorization") String bearerToken,
+        @RequestBody @Valid OrderRequest orderRequest
+    ) {
+        return ResponseEntity.ok().body(orderService.createOrder(bearerToken, orderRequest));
     }
     
     @GetMapping

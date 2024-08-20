@@ -36,18 +36,18 @@ public class OrderService {
     private final PaymentClient paymentClient;
     
     @Transactional
-    public OrderResponse createOrder(OrderRequest orderRequest) {
+    public OrderResponse createOrder(String bearerToken, OrderRequest orderRequest) {
         // Get customer
         CustomerResponse customer = null;
         try {
-            customer = customerClient.findCustomerById(orderRequest.customerId())
+            customer = customerClient.findCustomerById(bearerToken, orderRequest.customerId())
                     .orElseThrow(() -> new OrderException("Customer :: Not found with id %s".formatted(orderRequest.customerId())));
         } catch (FeignException e) {
-            throw new OrderException("Customer :: Not found with id %s".formatted(orderRequest.customerId()));
+            throw new OrderException(e.getMessage());
         }
         
         // Purchase product
-        List<PurchaseResponse> purchaseResponseList = productClient.purchase(orderRequest.products())
+        List<PurchaseResponse> purchaseResponseList = productClient.purchase(bearerToken, orderRequest.products())
                 .orElseThrow(() -> new OrderException("Purchase Product :: Invalid products"));
         
         // save order
@@ -71,6 +71,7 @@ public class OrderService {
         
         // save payment
         PaymentResponse paymentResponse = paymentClient.createPayment(
+            bearerToken,
             new PaymentRequest(
                 savedNewOrder.getId(),
                 savedNewOrder.getTotalAmount(),
