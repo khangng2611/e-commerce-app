@@ -1,5 +1,6 @@
 package com.khangng.order_service.product;
 
+import feign.FeignException;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,5 +19,5 @@ public interface ProductClient {
     Optional<List<PurchaseResponse>> purchase(
         @RequestHeader("Authorization") String bearerToken,
         @RequestBody List<PurchaseRequest> products
-    );
+    ) throws FeignException;
 }

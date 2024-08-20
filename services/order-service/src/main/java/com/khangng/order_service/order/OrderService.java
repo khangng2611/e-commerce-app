@@ -37,18 +37,19 @@ public class OrderService {
     
     @Transactional
     public OrderResponse createOrder(String bearerToken, OrderRequest orderRequest) {
-        // Get customer
         CustomerResponse customer = null;
+        List<PurchaseResponse> purchaseResponseList = null;
         try {
+            // Get customer
             customer = customerClient.findCustomerById(bearerToken, orderRequest.customerId())
                     .orElseThrow(() -> new OrderException("Customer :: Not found with id %s".formatted(orderRequest.customerId())));
+        
+            // Purchase product
+            purchaseResponseList = productClient.purchase(bearerToken, orderRequest.products())
+                    .orElseThrow(() -> new OrderException("Purchase Product :: Invalid products"));
         } catch (FeignException e) {
             throw new OrderException(e.getMessage());
         }
-        
-        // Purchase product
-        List<PurchaseResponse> purchaseResponseList = productClient.purchase(bearerToken, orderRequest.products())
-                .orElseThrow(() -> new OrderException("Purchase Product :: Invalid products"));
         
         // save order
         Order newOrder = Order.builder()
