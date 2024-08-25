@@ -1,17 +1,19 @@
 version: '3.7'
 
 services:
-#  postgres:
-#    image: postgres:latest
-#    container_name: postgres
-#    ports:
-#      - "5432:5432"
-#    environment:
-#      POSTGRES_USER: postgres
-#      POSTGRES_PASSWORD: postgres
-#      POSTGRES_DB: postgres
-#    networks:
-#      - e-commerce
+    postgres_ecom:
+      image: postgres:latest
+      container_name: postgres_ecom
+      ports:
+        - "5431:5432"
+      environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: nguyenkhang
+        POSTGRES_DB: postgres
+      healthcheck:
+        test: "exit 0"
+      networks:
+        - e-commerce
 
 #  mongodb:
 #    image: mongo:latest
@@ -95,6 +97,15 @@ services:
         environment:
             KEYCLOAK_ADMIN: admin
             KEYCLOAK_ADMIN_PASSWORD: admin
+            KC_DB: postgres
+            KC_DB_URL_HOST: postgres_ecom
+            KC_DB_URL_DATABASE: keycloak
+            KC_DB_PASSWORD: nguyenkhang
+            KC_DB_USERNAME: postgres
+            KC_DB_SCHEMA: public
+        depends_on:
+          postgres_ecom:
+            condition: service_healthy
         networks:
           - e-commerce
         command:
