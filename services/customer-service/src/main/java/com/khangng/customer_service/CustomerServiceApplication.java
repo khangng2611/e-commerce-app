@@ -2,12 +2,14 @@ package com.khangng.customer_service;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @SpringBootApplication
-public class CustomerServerApplication {
+@EnableJpaAuditing
+public class CustomerServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(CustomerServerApplication.class, args);
+		SpringApplication.run(CustomerServiceApplication.class, args);
 	}
 
 }

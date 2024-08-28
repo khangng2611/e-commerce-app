@@ -1,7 +1,9 @@
 package com.khangng.customer_service.customer;
 
+import com.khangng.customer_service.entity.Customer;
+
 public record CustomerResponse (
-    String id,
+    int id,
     String firstName,
     String lastName,
     String email

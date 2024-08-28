@@ -13,8 +13,12 @@ public class CustomerController {
     private final CustomerService customerService;
     
     @PostMapping
-    public ResponseEntity<CustomerResponse> createCustomer(@RequestBody @Valid CustomerRequest customerRequest) {
-        return ResponseEntity.ok(customerService.createCustomer(customerRequest));
+    public ResponseEntity<CustomerResponse> createCustomer(
+            @RequestHeader(value = "Authorization") String bearerToken,
+            @RequestBody @Valid CustomerRequest customerRequest
+    ) {
+        System.out.println(bearerToken);
+        return ResponseEntity.ok(customerService.createCustomer(bearerToken, customerRequest));
     }
     
     @PutMapping

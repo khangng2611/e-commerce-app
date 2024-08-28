@@ -1,0 +1,27 @@
+databaseChangeLog:
+- changeSet:
+    id: 1724856994531-1
+    author: nguyenkhang (generated)
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            name: customer_id
+            type: varchar(255)
+        tableName: customer
+- changeSet:
+    id: 1724856994531-2
+    author: nguyenkhang (generated)
+    changes:
+    - addUniqueConstraint:
+        columnNames: customer_id
+        constraintName: idx_customer_id
+        tableName: customer
+- changeSet:
+    id: 1724856994531-3
+    author: nguyenkhang (generated)
+    changes:
+    - dropColumn:
+        columnName: user_id
+        tableName: customer
+
