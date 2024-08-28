@@ -19,7 +19,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeExchange(exchange -> exchange
                         .pathMatchers("/eureka/**").permitAll()
-                        .pathMatchers("/api/v1/customers/**").hasRole("ADMIN_WRITE")
+//                        .pathMatchers("/api/v1/customers/**").hasRole("ADMIN_WRITE")
                         .anyExchange().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt().jwtAuthenticationConverter(new KeycloakJwtConverter(kcClientId)));

@@ -10,4 +10,6 @@ spring:
     config:
       override-system-properties: false
 
-
+  security:
+    jwt:
+      jwk-set-uri: http://localhost:9090/realms/e-commerce/protocol/openid-connect/certs
