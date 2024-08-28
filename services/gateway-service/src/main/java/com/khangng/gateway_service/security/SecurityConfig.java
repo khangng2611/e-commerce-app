@@ -21,6 +21,7 @@ public class SecurityConfig {
                         .pathMatchers("/eureka/**").permitAll()
 //                        .pathMatchers("/api/v1/customers/**").hasRole("ADMIN_WRITE")
                         .anyExchange().authenticated()
+//                        .anyExchange().permitAll()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt().jwtAuthenticationConverter(new KeycloakJwtConverter(kcClientId)));
         return http.build();

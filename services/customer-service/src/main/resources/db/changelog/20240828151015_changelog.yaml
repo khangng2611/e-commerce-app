@@ -1,0 +1,12 @@
+databaseChangeLog:
+- changeSet:
+    id: 1724857820645-1
+    author: nguyenkhang (generated)
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            name: username
+            type: varchar(255)
+        tableName: customer
+

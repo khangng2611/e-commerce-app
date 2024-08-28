@@ -8,7 +8,10 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -17,41 +20,55 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final JwtDecoder jwtDecoder;
     
-    public CustomerResponse createCustomer(String bearerToken, CustomerRequest customerRequest) {
+    public CustomerResponse createCustomer(String bearerToken) {
         Jwt jwt = jwtDecoder.decode(bearerToken.replace("Bearer ", ""));
-        String userId = jwt.getClaimAsString("sub");
+        String customerId = jwt.getClaimAsString("sub");
+        Optional<Customer> existedCustomer = customerRepository.findByCustomerId(customerId);
+        if (existedCustomer.isPresent()) {
+            return new CustomerResponse(existedCustomer.get());
+        }
+        
         String userEmail = jwt.getClaimAsString("email");
         String username = jwt.getClaimAsString("preferred_username");
         String firstName = jwt.getClaimAsString("given_name");
         String lastName = jwt.getClaimAsString("family_name");
-        System.out.println(userId + " " + userEmail + " " + username + " " + firstName + " " + lastName);
+        
+        Map<String, Collection<String>> realmAccess = jwt.getClaim("realm_access");
+        Collection<String> roleList = realmAccess.get("roles");
         
         Customer customer = Customer.builder()
-                .firstName(customerRequest.firstName())
-                .lastName(customerRequest.lastName())
-                .email(customerRequest.email())
-                .address(customerRequest.address())
+                .customerId(customerId)
+                .username(username)
+                .role(roleList.contains("admin") ? Role.ADMIN : Role.USER)
+                .firstName(firstName)
+                .lastName(lastName)
+                .email(userEmail)
                 .build();
         return new CustomerResponse(customerRepository.save(customer));
     }
     
-    public void updateCustomer(CustomerRequest customerRequest) {
-        Customer existingCustomer = customerRepository.findById(customerRequest.id()).orElseThrow(() ->
-            new CustomerNotFoundException(String.format("No customer found with the provided ID: %s", customerRequest.id()))
-        );
+    public void updateCustomer(String bearerToken, CustomerRequest customerRequest) {
+        Jwt jwt = jwtDecoder.decode(bearerToken.replace("Bearer ", ""));
+        String customerId = jwt.getClaimAsString("sub");
+        Customer existedCustomer = customerRepository.findByCustomerId(customerId)
+                .orElseThrow(() -> new CustomerNotFoundException(String.format("No customer found with the provided customerId: %s", customerId)));
+        
         if (StringUtils.isNotBlank(customerRequest.firstName())) {
-            existingCustomer.setFirstName(customerRequest.firstName());
+            existedCustomer.setFirstName(customerRequest.firstName());
         }
         if (StringUtils.isNotBlank(customerRequest.lastName())) {
-            existingCustomer.setLastName(customerRequest.lastName());
+            existedCustomer.setLastName(customerRequest.lastName());
         }
         if (StringUtils.isNotBlank(customerRequest.email())) {
-            existingCustomer.setEmail(customerRequest.email());
+            existedCustomer.setEmail(customerRequest.email());
         }
-        if (customerRequest.address() != null) {
-            existingCustomer.setAddress(customerRequest.address());
+        if (StringUtils.isNotBlank(customerRequest.address())) {
+            existedCustomer.setAddress(customerRequest.address());
         }
-        this.customerRepository.save(existingCustomer);
+        if (StringUtils.isNotBlank(customerRequest.phoneNumber())) {
+            existedCustomer.setPhoneNumber(customerRequest.phoneNumber());
+        }
+        this.customerRepository.save(existedCustomer);
     }
     
     public List<CustomerResponse> getAllCustomers() {
