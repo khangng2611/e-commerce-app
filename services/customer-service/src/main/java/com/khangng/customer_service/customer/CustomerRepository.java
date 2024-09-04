@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface CustomerRepository extends JpaRepository<Customer, String> {
     Optional<Customer> findByCustomerId(String customerId);
+    
+    void deleteByCustomerId(String customerId);
 }

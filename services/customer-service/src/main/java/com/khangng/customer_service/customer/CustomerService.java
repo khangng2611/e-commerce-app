@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
@@ -20,7 +21,8 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final JwtDecoder jwtDecoder;
     
-    public CustomerResponse createCustomer(String bearerToken) {
+    
+    public CustomerResponse create(String bearerToken) {
         Jwt jwt = jwtDecoder.decode(bearerToken.replace("Bearer ", ""));
         String customerId = jwt.getClaimAsString("sub");
         Optional<Customer> existedCustomer = customerRepository.findByCustomerId(customerId);
@@ -47,11 +49,22 @@ public class CustomerService {
         return new CustomerResponse(customerRepository.save(customer));
     }
     
-    public void updateCustomer(String bearerToken, CustomerRequest customerRequest) {
-        Jwt jwt = jwtDecoder.decode(bearerToken.replace("Bearer ", ""));
-        String customerId = jwt.getClaimAsString("sub");
-        Customer existedCustomer = customerRepository.findByCustomerId(customerId)
-                .orElseThrow(() -> new CustomerNotFoundException(String.format("No customer found with the provided customerId: %s", customerId)));
+    public List<CustomerResponse> getAll() {
+        return customerRepository.findAll()
+                .stream()
+                .map(CustomerResponse::new)
+                .collect(Collectors.toList());
+    }
+    
+    public CustomerResponse getByCustomerId(String customerId) {
+        return customerRepository.findByCustomerId(customerId)
+                .map(CustomerResponse::new)
+                .orElseThrow(() -> new CustomerNotFoundException(String.format("No customer found with the provided ID: %s", customerId)));
+    }
+    
+    public void updateByCustomerId(CustomerRequest customerRequest) {
+        Customer existedCustomer = customerRepository.findByCustomerId(customerRequest.customerId())
+                .orElseThrow(() -> new CustomerNotFoundException(String.format("No customer found with the provided customerId: %s", customerRequest.customerId())));
         
         if (StringUtils.isNotBlank(customerRequest.firstName())) {
             existedCustomer.setFirstName(customerRequest.firstName());
@@ -71,22 +84,42 @@ public class CustomerService {
         this.customerRepository.save(existedCustomer);
     }
     
-    public List<CustomerResponse> getAllCustomers() {
-        return customerRepository.findAll()
-            .stream()
-            .map(CustomerResponse::new)
-            .collect(Collectors.toList());
-    }
-    
-    public CustomerResponse getCustomerById(String customerId) {
-        return customerRepository.findById(customerId)
-            .map(CustomerResponse::new)
-            .orElseThrow(() -> new CustomerNotFoundException(String.format("No customer found with the provided ID: %s", customerId)));
-    }
-    
-    public void deleteCustomer(String customerId) {
-        customerRepository.findById(customerId)
+    @Transactional
+    public void deleteByCustomerId(String customerId) {
+        customerRepository.findByCustomerId(customerId)
                 .orElseThrow(() -> new CustomerNotFoundException(String.format("No customer found with the provided ID: %s", customerId)));
-        customerRepository.deleteById(customerId);
+        customerRepository.deleteByCustomerId(customerId);
+    }
+    
+    // SELF
+    public CustomerResponse getSelf(String bearerToken) {
+        Jwt jwt = jwtDecoder.decode(bearerToken.replace("Bearer ", ""));
+        String customerId = jwt.getClaimAsString("sub");
+        return customerRepository.findByCustomerId(customerId)
+                .map(CustomerResponse::new)
+                .orElseThrow(() -> new CustomerNotFoundException(String.format("No customer found with the provided customerId: %s", customerId)));
+    }
+    
+    public void updateSelf(String bearerToken, CustomerRequest customerRequest) {
+        Jwt jwt = jwtDecoder.decode(bearerToken.replace("Bearer ", ""));
+        String customerId = jwt.getClaimAsString("sub");
+        updateByCustomerId(
+            new CustomerRequest(
+                customerId,
+                customerRequest.firstName(),
+                customerRequest.lastName(),
+                customerRequest.email(),
+                customerRequest.address(),
+                customerRequest.phoneNumber()
+            )
+        );
+        
+    }
+    
+    @Transactional
+    public void deleteSelf (String bearerToken) {
+        Jwt jwt = jwtDecoder.decode(bearerToken.replace("Bearer ", ""));
+        String customerId = jwt.getClaimAsString("sub");
+        deleteByCustomerId(customerId);
     }
 }
