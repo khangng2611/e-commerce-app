@@ -21,7 +21,6 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final JwtDecoder jwtDecoder;
     
-    
     public CustomerResponse create(String bearerToken) {
         Jwt jwt = jwtDecoder.decode(bearerToken.replace("Bearer ", ""));
         String customerId = jwt.getClaimAsString("sub");

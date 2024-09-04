@@ -32,4 +32,19 @@ public class OrderController {
     ) {
         return ResponseEntity.ok(orderService.findById(UUID.fromString(orderId)));
     }
+    
+    @GetMapping("/me")
+    public ResponseEntity<OrderResponse> findAllSelf(
+            @RequestHeader(value = "Authorization") String bearerToken
+    ) {
+        return ResponseEntity.ok(orderService.findAllSelf(bearerToken));
+    }
+    
+    @GetMapping("/me/{order-id}")
+    public ResponseEntity<OrderResponse> findSelfById(
+            @RequestHeader(value = "Authorization") String bearerToken,
+            @PathVariable("order-id") String orderId
+    ) {
+        return ResponseEntity.ok(orderService.findSelfById(UUID.fromString(orderId)));
+    }
 }

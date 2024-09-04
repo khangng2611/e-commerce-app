@@ -26,7 +26,7 @@ public class PaymentService {
         var newPayment = Payment.builder()
                 .paymentStatus(PaymentStatus.PENDING)
                 .orderId(paymentRequest.orderId())
-                .customerId(paymentRequest.customer().id())
+                .customerId(paymentRequest.customer().customerId())
                 .paymentMethod(paymentRequest.paymentMethod())
                 .amount(paymentRequest.amount())
                 .build();

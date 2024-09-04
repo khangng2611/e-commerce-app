@@ -27,7 +27,17 @@ public class SecurityConfig {
                         .pathMatchers(HttpMethod.PUT, "/api/v1/customers/**").hasRole("ADMIN_WRITE")
                         .pathMatchers(HttpMethod.DELETE, "/api/v1/customers/**").hasRole("ADMIN_WRITE")
                         
+                        // product & category
+                        .pathMatchers(HttpMethod.POST, "/api/v1/products/purchase/**").authenticated()
+                        .pathMatchers(HttpMethod.POST, "/api/v1/categories/**").hasRole("ADMIN_WRITE")
+                        .pathMatchers(HttpMethod.POST, "/api/v1/products/**").hasRole("ADMIN_WRITE")
+                        
+                        // order
+                        .pathMatchers("/api/v1/orders/me/**").authenticated()
+                        .pathMatchers(HttpMethod.GET, "/api/v1/orders/**").hasRole("ADMIN_WRITE")
+                        
                         .anyExchange().authenticated()
+                
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt().jwtAuthenticationConverter(new KeycloakJwtConverter(kcClientId)));
         return http.build();

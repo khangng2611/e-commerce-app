@@ -1,9 +1,9 @@
 package com.khangng.order_service.customer;
 
 public record CustomerResponse(
-    String id,
+    String customerId,
+    String email,
     String firstName,
-    String lastName,
-    String email
+    String lastName
 ) {
 }

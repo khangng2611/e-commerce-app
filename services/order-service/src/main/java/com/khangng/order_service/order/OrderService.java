@@ -1,6 +1,5 @@
 package com.khangng.order_service.order;
 
-import com.khangng.order_service.customer.CustomerClient;
 import com.khangng.order_service.customer.CustomerRequest;
 import com.khangng.order_service.customer.CustomerResponse;
 import com.khangng.order_service.entity.Order;
@@ -18,6 +17,8 @@ import com.khangng.order_service.product.ProductClient;
 import com.khangng.order_service.product.PurchaseResponse;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,22 +29,22 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Service
 public class OrderService {
-    private final CustomerClient customerClient;
     private final ProductClient productClient;
     private final OrderRepository orderRepository;
     private final OrderLineService orderLineService;
     private final OrderProducer orderProducer;
     private final PaymentClient paymentClient;
+    private final JwtDecoder jwtDecoder;
     
     @Transactional
     public OrderResponse createOrder(String bearerToken, OrderRequest orderRequest) {
-        CustomerResponse customer = null;
+        Jwt jwt = jwtDecoder.decode(bearerToken.replace("Bearer ", ""));
+        String customerId = jwt.getClaimAsString("sub");
+        String userEmail = jwt.getClaimAsString("email");
+        String firstName = jwt.getClaimAsString("given_name");
+        String lastName = jwt.getClaimAsString("family_name");
         List<PurchaseResponse> purchaseResponseList = null;
         try {
-            // Get customer
-            customer = customerClient.findCustomerById(bearerToken, orderRequest.customerId())
-                    .orElseThrow(() -> new OrderException("Customer :: Not found with id %s".formatted(orderRequest.customerId())));
-        
             // Purchase product
             purchaseResponseList = productClient.purchase(bearerToken, orderRequest.products())
                     .orElseThrow(() -> new OrderException("Purchase Product :: Invalid products"));
@@ -54,7 +55,7 @@ public class OrderService {
         // save order
         Order newOrder = Order.builder()
                 .totalAmount(orderRequest.totalAmount())
-                .customerId(orderRequest.customerId())
+                .customerId(customerId)
                 .paymentMethod(orderRequest.paymentMethod())
                 .build();
         var savedNewOrder = orderRepository.save(newOrder);
@@ -78,10 +79,10 @@ public class OrderService {
                 savedNewOrder.getTotalAmount(),
                 savedNewOrder.getPaymentMethod(),
                 new CustomerRequest(
-                    customer.id(),
-                    customer.firstName(),
-                    customer.lastName(),
-                    customer.email()
+                    customerId,
+                    firstName,
+                    lastName,
+                    userEmail
                 )
             )
         );
@@ -92,7 +93,7 @@ public class OrderService {
                 savedNewOrder.getId(),
                 savedNewOrder.getTotalAmount(),
                 savedNewOrder.getPaymentMethod(),
-                customer,
+                new CustomerResponse(customerId, userEmail, firstName, lastName),
                 purchaseResponseList
             )
         );
@@ -119,6 +120,21 @@ public class OrderService {
     public OrderResponse findById(UUID orderId) {
         return orderRepository.findById(orderId)
             .map(order -> new OrderResponse(order, orderLineService.findOrderLineByOrderId(orderId), null))
+            .orElseThrow(() -> new OrderException("Order not found"));
+    }
+    
+    public OrderResponse findAllSelf(String bearerToken) {
+        Jwt jwt = jwtDecoder.decode(bearerToken.replace("Bearer ", ""));
+        String customerId = jwt.getClaimAsString("sub");
+        return orderRepository.findByCustomerId(customerId)
+            .map(order -> new OrderResponse(order, orderLineService.findOrderLineByOrderId(order.getId()), null))
+            .orElseThrow(() -> new OrderException("Order not found"));
+    }
+    
+    
+    public OrderResponse findSelfById(UUID uuid) {
+        return orderRepository.findById(uuid)
+            .map(order -> new OrderResponse(order, orderLineService.findOrderLineByOrderId(uuid), null))
             .orElseThrow(() -> new OrderException("Order not found"));
     }
 }

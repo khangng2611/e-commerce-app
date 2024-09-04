@@ -31,6 +31,4 @@ public class ProductController {
     public ResponseEntity<ProductResponse> getProductById(@PathVariable("product-id") String productId) {
         return ResponseEntity.ok().body(productService.getProductById(productId));
     }
-    
-    
 }
